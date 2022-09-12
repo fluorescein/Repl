@@ -49,7 +49,7 @@ namespace Repl
             }
         }
 
-        // parse statement according to keyword
+        // parse statement according to keyword found
         private Statement Statement()
         {
             if (MatchesNext(TokenType.IF))
@@ -75,7 +75,7 @@ namespace Repl
             return ExpressionStatement();
         }
 
-        // print result of an expression
+        // "print" ( <expression> | <identifier> ) ";"
         private Statement PrintStatement()
         {
             Expression value = Expression();
@@ -83,6 +83,7 @@ namespace Repl
             return new PrintStatement(value);
         }
 
+        // <identifier> "=" <expression> ";"
         private Statement ExpressionStatement()
         {
             Expression expr = Expression();
@@ -90,9 +91,9 @@ namespace Repl
             return new ExpressionStatement(expr);
         }
 
+        // "let" <identifier> "=" <initializer> ";"
         private Statement VariableDeclaration()
         {
-            // "let" <identifier> "=" <initializer> ";"
             Token name = Consume(TokenType.IDENTIFIER, "Expected variable name.");      // let is already consumed
             Expression initializer = null;
 
@@ -106,6 +107,7 @@ namespace Repl
             return new VariableStatement(name, initializer);
         }
 
+        // "if" <expression> "then" <statement> "else" <statement>
         private Statement IfStatement()
         {
             Expression condition = Expression();
@@ -122,7 +124,7 @@ namespace Repl
             return new IfStatement(condition, thenBranch, elseBranch);
         }
 
-
+        // "for" <identifier> "in" <expression> ".." <expression> "begin" <statement> "end"
         private Statement ForStatement()
         {
             Advance();                                  // skip loop "identifier"
@@ -143,6 +145,7 @@ namespace Repl
             return new ForStatement(left, right, body);
         }
 
+        // "while" <expression> "begin" <statement> "end"
         private Statement WhileStatement()
         {
             Expression condition = Expression();
@@ -159,12 +162,11 @@ namespace Repl
             return new WhileStatement(condition, body);
         }
 
-
         // parsing expressions
 
         private Expression Expression() => Comma();
 
-        // operator comma evaluates expressions separated by comma and returns the last value
+        // comma operator evaluates expressions separated by comma and returns the last value
         private Expression Comma()
         {
             Expression expr = Assignment();
@@ -198,6 +200,7 @@ namespace Repl
             return expr;
         }
 
+        // logical OR has lower priority than logical AND
         private Expression LogicalOr()
         {
             Expression expr = LogicalAnd();
@@ -226,7 +229,6 @@ namespace Repl
             return expr;
         }
 
-
         private Expression Equality()
         {
             Expression expr = comparison();
@@ -254,7 +256,8 @@ namespace Repl
 
             return expr;
         }
-
+        
+        // addition, subtraction
         private Expression AddSub()
         {
             Expression expr = MulDiv();
@@ -269,6 +272,7 @@ namespace Repl
             return expr;
         }
 
+        // multiplying, division
         private Expression MulDiv()
         {
             Expression expr = Unary();
@@ -283,6 +287,7 @@ namespace Repl
             return expr;
         }
 
+        // logical negation, arithmetic negation
         private Expression Unary()
         {
             if (MatchesNext(TokenType.BANG, TokenType.MINUS))
@@ -405,6 +410,8 @@ namespace Repl
             return new ParseError();
         }
 
+        // in case of syntax error, will get the parser to the state
+        // so that the current token matches rule currently parsed
         private void Synchronize()
         {
             Advance();
