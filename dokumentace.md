@@ -141,7 +141,6 @@ forStatement        ::= "for" .* "in" expression ".." expression "begin" (statem
 
 whileStatement      ::= "while" expression "begin" (statement)* "end"
 
-
 expression  ::= literal
               | unary
               | binary
@@ -151,8 +150,8 @@ expression  ::= literal
 assignment  ::= IDENTIFIER "=" assignment
               | equality ;
 
-logicalOr  ::= logicalAnd ( "or" logicalAnd )* ;
-logicalAnd ::= equality ( "and" equality )* ;
+logicalOr   ::= logicalAnd ( "or" logicalAnd )* ;
+logicalAnd  ::= equality ( "and" equality )* ;
 
 literal     ::= NUMBER | STRING | "true" | "false"
 grouping    ::= "(" expression ")" ;
@@ -171,7 +170,6 @@ unary       ::= ( "!" | "-" ) unary | primary ;
 primary     ::= NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 
 ```
-
 
 <br>
 
