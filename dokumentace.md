@@ -70,7 +70,7 @@ hello world
 - `else` větev není povinná
 - za klíčovým slovem `then`, resp. `else` může následovat jenom jeden příkaz
 
-```ml
+```cs
 [repl] let x = 1;
 [repl] let y = 10;
 [repl] if x < y then print "x < y"; else print "x >= y";
@@ -78,7 +78,7 @@ hello world
 
 ### `for` cyklus
 - `for i in a..b` je ekvivalentní `for _ in range(a, b)` v Pythonu
-- písmeno "`i`" v tomto příkladě nereprezentuje proměnnou, jde jenom o identifikátor bez významu (v průběhu cyklu neexistuje žádná proměnná "`i`" přes kterou by se iterovalo)
+- písmeno `i` v tomto příkladě nereprezentuje proměnnou, jde jenom o identifikátor bez významu (v průběhu cyklu neexistuje žádná proměnná "`i`" přes kterou by se iterovalo)
 - výrazy na levé a pravé straně symbolu "`..`" se musí vyhodnotit na číselný typ
 - tělo cyklu může obsahovat víc příkazů a musí být vymezeno klíčovými slovy `begin` a `end`
 
@@ -92,7 +92,7 @@ hello world
 ```
 
 ### `while` cyklus
-- stejně jako for-cyklus musí být tělo while-cyklu vymezeno slovy `begin` a `end`
+- stejně jako v případě for-cyklu musí být tělo while-cyklu vymezeno slovy `begin` a `end`
 - podmínka while-cyklu není ohraničena závorkami
 
 ```cs
@@ -107,14 +107,14 @@ hello world
 ### Komentáře
 - jsou podporovány jednořádkové komentáře
 
-```rs
+```cs
 [repl] // komentar
 [repl]
 ```
 
 ## Gramatika jazyka
 
-```ml
+```cs
 program     ::= declaration* EOF ;
 
 declaration ::= variableDeclaration
@@ -137,9 +137,9 @@ printStatement      ::= "print" expression ";" ;
 
 ifStatement         ::= "if" expression "then" statement ( "else" statement )? ;
 
-forStatement        ::= "for" .* "in" expression ".." expression "begin" (statement)* "end"
+forStatement        ::= "for" .* "in" expression ".." expression "begin" (statement)* "end" ;
 
-whileStatement      ::= "while" expression "begin" (statement)* "end"
+whileStatement      ::= "while" expression "begin" (statement)* "end" ;
 
 expression  ::= literal
               | unary
@@ -153,12 +153,11 @@ assignment  ::= IDENTIFIER "=" assignment
 logicalOr   ::= logicalAnd ( "or" logicalAnd )* ;
 logicalAnd  ::= equality ( "and" equality )* ;
 
-literal     ::= NUMBER | STRING | "true" | "false"
+literal     ::= NUMBER | STRING | "true" | "false" ;
 grouping    ::= "(" expression ")" ;
 unary       ::= ( "-" | "!" ) expression ;
 binary      ::= expression operator expression ;
-operator    ::= "+" | "-" | "*" | "/" | "^" | "==" | "!=" | "<" | "<=" | ">" | ">=" | AND | OR
-
+operator    ::= "+" | "-" | "*" | "/" | "^" | "==" | "!=" | "<" | "<=" | ">" | ">=" | AND | OR ;
 
 expression  ::= equality ;
 equality    ::= comparison (( "!=" | "==" ) comparison)* ;
@@ -186,10 +185,9 @@ Třída Token reprezentuje základní "jednotku" zdrojového kódu — token. T�
 - `string lexeme`
     - textová reprezentace daného tokenu (například v případě čísla 123 ve zdrojovém kódu bude jeho textová reprezentace "123")
 - `object value`
-    - hodnota tokenu odpovídajícího typu (int, bool, string)
+    - hodnota tokenu odpovídajícího typu (`int`, `bool`, `string`)
 
 Všechny druhy tokenů jsou definovány enumerací `public enum TokenType`.
-
 <br>
 
 ## Třída **`Lexer`**
@@ -201,17 +199,16 @@ Všechna klíčová slova jsou definována ve `Dictionary<string, TokenType> key
 
 Lexer je inicializován řetězcem zadaným do konzole.
 
-Atribut `int start` označuji pozici ve vstupném textu od které se začíná hledání dalšího tokenu, atribut `int current` označuje konečnou pozici. Podřetězec vytyčen těmito pozicemi tedy představuje nalezený token.
+Atribut `int start` označuje pozici ve vstupném textu od které se začíná hledání dalšího tokenu, atribut `int current` označuje konečnou pozici. Podřetězec vytyčen těmito pozicemi představuje nalezený token.
 
-K lexikální analýze celého vstupu slouží metoda `Tokenize()`.
-
+K lexikální analýze celého vstupu slouží metoda `Tokenize()`. Výstupem lexeru je seznam tokenů.
 <br>
 
 ## Třída **`Expression`**
 
 Třída ***Expression*** je základem pro implementaci výrazů — konstruktů, které se vyhodnocují na hodnotu.
 
-Všechny výrazy který existují v implementovaném jazyce, jsou reprezentovány třídou odvozenou od abstraktní třídy ***Expression***.
+Všechny výrazy kter0 existují v implementovaném jazyce, jsou reprezentovány třídou odvozenou od abstraktní třídy ***Expression***.
 <br>
 
 V implementaci této třídy byl využit *Visitor/Interpreter pattern* který později umožní interpreteru zavolat metodu pro vyhodnocení podle druhu výrazu.
@@ -224,15 +221,21 @@ Výrazy jsou následující:
 - **binární výrazy** — operaci se dvěma operandy — aritmetické operace, operace porovnávání
 - **logické výrazy** — vyhodnocují se na `true`/`false`
 - **seskupovací výrazy** — kombinace předchozích výrazů
-
 <br>
 
 ## Třída **`Statement`**
 
-Zdrojový kód je posloupností příkazů (statements). Tyto příkazy jsou reprezentovány třídou `Statement`.
+Zdrojový kód je posloupností příkazů. Tyto příkazy jsou reprezentovány třídou `Statement`.
 
 Tato třída je velice podobná tříde `Expression` — všechny třídy reprezentující jednotlivé příkazy jsou odvozeny od abstraktní třídy `Statement`.
 
+Příkazy jsou:
+- **print**
+- **variable statement** — deklarace a inicializace proměnné
+- **expression statement** — přiřazení hodnoty do proměnné
+- **if statement** — `if/then/else`
+- **for statement** — `for` cyklus
+- **while statement** — `while` cyklus
 <br>
 
 ## Třída **`Parser`**
@@ -240,7 +243,6 @@ Tato třída je velice podobná tříde `Expression` — všechny třídy reprez
 Dalším krokem je zpracování seznamu tokenů parserem, který sestaví **abstraktní syntaktický strom** (AST).
 
 Pro účely tohoto programu byl implementován parser s rekurzivním sestupem. Parser je inicializován seznamem tokenů, který je výstupem lexeru.
-
 
 Princip parseru je následující: pro každé pravidlo v gramatice jazyka bude existovat metoda, která parsuje dané pravidlo. Pokud najde token který je součástí daného pravidla, vytvoří odpovídající uzel/uzly v AST.
 Pokud ne, rekurzivně zavolá další metodu.
@@ -251,7 +253,6 @@ Samotné parsování se spouští metodou `Parse()`.
 Jako první se parsují příkazy, konkrétně deklarace, následují příkazy `if`, `print`, `for` a `while`.
 <br>
 Následuje parsování výrazů podle priorit. Výstupem parseru je seznam příkazů.
-
 <br>
 
 ## Třída **`Interpreter`**
@@ -259,7 +260,6 @@ Následuje parsování výrazů podle priorit. Výstupem parseru je seznam pří
 Interpreter je zodpovědný za vyhodnocení výrazů a vykonání příkazů podle AST sestaveného parserem.
 
 Ve třídě `Interpreter` jsou implementovány všechny `Visit` metody deklarované ve třídách `Expression` a `Statement`.
-
 <br>
 
 ## Třída `Environment`
@@ -269,7 +269,6 @@ Tato třída definuje metody pro manipulaci s proměnnými.
 Všechny proměnné deklarovány za běhu REPL jsou uloženy ve slovníku, klíčem jsou názvy proměnných.
 
 Instance třídy `Environment` je vytvořena jenom jednou a existuje po celou dobu běhu interpreteru.
-
 <br>
 
 ## Třída `Error`
